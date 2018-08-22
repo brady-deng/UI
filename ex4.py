@@ -19,45 +19,64 @@ class Application(tk.Frame):
         self.filename = ''
         self.rate = 16000
         self.result = 'State:'+'等待'
-        self.pack()
+        # self.pack()
+        self.create_frame()
         self.create_widgets()
 
-
+    def create_frame(self):
+        self.frame_speechRec = tk.Frame(width = 550,height = 100, bg = 'green')
+        self.frame_speechRec.grid(row = 0,column = 0)
+        self.frame_wordRec = tk.Frame(width = 550,height = 100,bg = 'white')
+        self.frame_wordRec.grid(row = 1,column = 0)
+        self.frame_speechRec.grid_propagate(0)
+        self.frame_wordRec.grid_propagate(0)
     def create_widgets(self):
-        self.openfile = tk.Button(self)
+
+        self.openfile = tk.Button(self.frame_speechRec)
         self.openfile["text"] = "打开..."
         self.openfile["command"] = self.open_file
         self.openfile.bind('<ButtonRelease-1>', self.setstateopen)
-        self.openfile.pack(side="top")
-        self.filepath = tk.Label(self)
-        self.filepath["text"] = "文件路径:"+self.filename
-        self.filepath.pack()
-        self.speechrec = tk.Button(self)
+        self.openfile["bg"] = 'green'
+        self.openfile["fg"] = 'white'
+        self.openfile.grid(row = 0,column = 0,sticky = tk.W)
+        self.filepath = tk.Label(self.frame_speechRec)
+        self.filepath["textvariable"] = self.filename
+        self.filepath["bg"] = 'green'
+        self.filepath["fg"] = 'white'
+        self.filepath.grid(row = 0, column = 1,sticky = tk.W)
+        self.speechrec = tk.Button(self.frame_speechRec)
         self.speechrec["text"] = "开始"
         self.speechrec["command"] = self.speech_rec
         self.speechrec.bind('<ButtonRelease-1>',self.setstatestart)
-        self.speechrec.pack()
-        self.label1 = tk.Label(self)
+        self.speechrec["bg"] = "green"
+        self.speechrec["fg"] = "white"
+        self.speechrec.grid(row = 2, column = 0,sticky = tk.W)
+        self.label1 = tk.Label(self.frame_speechRec)
         self.label1["text"] = "Sample Rate:"
-        # self.label1["bg"] = 'green'
-        self.label1.pack()
-        self.samplerate = tk.Listbox(self)
-        self.samplerate["height"] = 4
+        self.label1["bg"] = 'green'
+        self.label1["fg"] = 'white'
+        self.label1.grid(row = 1,column = 1,sticky = tk.W)
+        self.samplerate = tk.Listbox(self.frame_speechRec)
+        self.samplerate["height"] = 2
         self.samplerate["width"] = 6
         self.samplerate.insert(1,8000)
         self.samplerate.insert(2,16000)
+        self.samplerate['bg'] = 'green'
+        self.samplerate['fg'] = 'white'
         self.samplerate.bind('<ButtonRelease-1>',self.settextlabel1)
-        self.samplerate.pack()
-        self.label2 = tk.Label(self)
+        self.samplerate.grid(row = 1,column = 0,sticky = tk.W)
+        self.label2 = tk.Label(self.frame_speechRec)
         self.label2["text"] = self.result
-        self.label2.pack()
+        self.label2['bg'] = 'green'
+        self.label2['fg'] = 'white'
+        self.label2.grid(row = 2,column = 1,sticky = tk.W)
 
         # self.samplerate["command"] = self.getsample
 
 
         self.quit = tk.Button(self, text="QUIT", fg="red",
                               command=root.destroy)
-        self.quit.pack(side="bottom")
+        self.quit.grid(row = 3)
 
     # def say_hi(self):
     #     print("hi there, everyone!")
@@ -99,5 +118,6 @@ class Application(tk.Frame):
 root = tk.Tk()
 root.title("Baidu API")
 root.geometry("550x550")
+root.iconbitmap('bitbug_favicon.ico')
 app = Application(master=root)
 app.mainloop()
