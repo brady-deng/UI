@@ -1,3 +1,2 @@
-from distutils.core import setup
-import py2exe
-setup(windows=["ex4.py"])
+with open("1.txt",'w') as file:
+    file.write("等城阳")
