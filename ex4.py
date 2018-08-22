@@ -1,7 +1,7 @@
 import tkinter.filedialog
 import tkinter as tk
 
-from aip import AipSpeech
+from aip import AipSpeech,AipOcr
 
 
 
@@ -16,16 +16,18 @@ def get_file_content(filePath):
 class Application(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
+
+        # self.pack()
+        self.create_speechrec_variable()
+        self.create_frame()
+        self.create_speechrec_widgets()
+    def create_speechrec_variable(self):
         self.filename = tk.StringVar()
         self.rate = tk.StringVar()
         self.result = tk.StringVar()
-        self.filename.set('')
+        self.filename.set('E://ex/UI/life.wav')
         self.rate.set("采样率："+'16000')
         self.result.set('State:'+'请选择文件...')
-        # self.pack()
-        self.create_frame()
-        self.create_widgets()
-
     def create_frame(self):
         self.frame_speechRec = tk.Frame(width = 550,height = 100, bg = 'green')
         self.frame_speechRec.grid(row = 0,column = 0)
@@ -33,7 +35,7 @@ class Application(tk.Frame):
         self.frame_wordRec.grid(row = 1,column = 0)
         self.frame_speechRec.grid_propagate(0)
         self.frame_wordRec.grid_propagate(0)
-    def create_widgets(self):
+    def create_speechrec_widgets(self):
 
         self.openfile = tk.Button(self.frame_speechRec)
         self.openfile["text"] = "打开..."
@@ -86,12 +88,6 @@ class Application(tk.Frame):
         self.rate.set("采样率："+str(self.samplerate.get(self.samplerate.curselection())))
     def open_file(self):
         self.filename.set(tkinter.filedialog.askopenfilename())
-
-
-
-
-
-
     def speech_rec(self):
         # 识别本地文件
         self.result.set("State:"+"正忙")
@@ -112,6 +108,7 @@ class Application(tk.Frame):
         with open("res.txt", 'w') as file:
             file.write(temp1['result'][0])
         #     file.write(temp2['result'][0])
+
 
 
 root = tk.Tk()
