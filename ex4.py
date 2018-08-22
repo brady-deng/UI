@@ -16,9 +16,12 @@ def get_file_content(filePath):
 class Application(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
-        self.filename = ''
-        self.rate = 16000
-        self.result = 'State:'+'等待'
+        self.filename = tk.StringVar()
+        self.rate = tk.StringVar()
+        self.result = tk.StringVar()
+        self.filename.set('')
+        self.rate.set("采样率："+'16000')
+        self.result.set('State:'+'请选择文件...')
         # self.pack()
         self.create_frame()
         self.create_widgets()
@@ -35,7 +38,6 @@ class Application(tk.Frame):
         self.openfile = tk.Button(self.frame_speechRec)
         self.openfile["text"] = "打开..."
         self.openfile["command"] = self.open_file
-        self.openfile.bind('<ButtonRelease-1>', self.setstateopen)
         self.openfile["bg"] = 'green'
         self.openfile["fg"] = 'white'
         self.openfile.grid(row = 0,column = 0,sticky = tk.W)
@@ -47,12 +49,11 @@ class Application(tk.Frame):
         self.speechrec = tk.Button(self.frame_speechRec)
         self.speechrec["text"] = "开始"
         self.speechrec["command"] = self.speech_rec
-        self.speechrec.bind('<ButtonRelease-1>',self.setstatestart)
         self.speechrec["bg"] = "green"
         self.speechrec["fg"] = "white"
         self.speechrec.grid(row = 2, column = 0,sticky = tk.W)
         self.label1 = tk.Label(self.frame_speechRec)
-        self.label1["text"] = "Sample Rate:"
+        self.label1["textvariable"] = self.rate
         self.label1["bg"] = 'green'
         self.label1["fg"] = 'white'
         self.label1.grid(row = 1,column = 1,sticky = tk.W)
@@ -63,10 +64,11 @@ class Application(tk.Frame):
         self.samplerate.insert(2,16000)
         self.samplerate['bg'] = 'green'
         self.samplerate['fg'] = 'white'
+
         self.samplerate.bind('<ButtonRelease-1>',self.settextlabel1)
         self.samplerate.grid(row = 1,column = 0,sticky = tk.W)
         self.label2 = tk.Label(self.frame_speechRec)
-        self.label2["text"] = self.result
+        self.label2["textvariable"] = self.result
         self.label2['bg'] = 'green'
         self.label2['fg'] = 'white'
         self.label2.grid(row = 2,column = 1,sticky = tk.W)
@@ -80,22 +82,19 @@ class Application(tk.Frame):
 
     # def say_hi(self):
     #     print("hi there, everyone!")
-    def open_file(self):
-        self.filename = tkinter.filedialog.askopenfilename()
-        self.filepath["text"] = "文件路径:"+self.filename
-
     def settextlabel1(self,event):
-        self.label1["text"] = "Sample Rate:"+str(self.samplerate.get(self.samplerate.curselection()))
-    def setstateopen(self,event):
-        self.label2["text"] = 'State:'+'选择文件'
-    def setstatestart(self,event):
-        self.label2["text"] = 'State:'+'正忙'
+        self.rate.set("采样率："+str(self.samplerate.get(self.samplerate.curselection())))
+    def open_file(self):
+        self.filename.set(tkinter.filedialog.askopenfilename())
+
+
+
 
 
 
     def speech_rec(self):
         # 识别本地文件
-
+        self.result.set("State:"+"正忙")
         APP_ID = '11388941'
         API_KEY = '0ZYGXXiNUMXDalelafeEL0GW'
         SECRET_KEY = 'VmTREEGWKm4V0DPAyQLfuEwhwISZoXx6 '
@@ -106,7 +105,7 @@ class Application(tk.Frame):
         # temp2 = client.asr(get_file_content('2.amr'), format='amr', rate=8000,options= {
         #     'lan': 'en',
         # })
-        self.label2["text"] =  'State:'+temp1['err_msg']
+        self.result.set('State:'+temp1['err_msg'])
         # print(temp1['result'])
         # print(temp2['result'])
         #
