@@ -1,2 +1,4 @@
-with open("1.txt",'w') as file:
-    file.write("等城阳")
+import winsound
+from playsound import playsound
+winsound.PlaySound("life.wav",flags = 1)
+playsound("life.wav")

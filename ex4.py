@@ -2,6 +2,7 @@ import tkinter.filedialog
 import tkinter as tk
 import facecv
 from aip import AipSpeech,AipOcr
+import function
 
 
 
@@ -79,6 +80,7 @@ class Application(tk.Frame):
         self.label2.grid(row = 2,column = 1,sticky = tk.W)
         self.func_speech = tk.Radiobutton(self.frame_speechRec)
         self.func_word = tk.Radiobutton(self.frame_speechRec)
+        self.func_image = tk.Radiobutton(self.frame_speechRec)
         self.func_speech["text"] = "语音识别"
         self.func_speech["variable"] = self.funcNum
         self.func_speech['bg'] = 'green'
@@ -97,12 +99,36 @@ class Application(tk.Frame):
         self.func_word['value'] = 2
         self.func_word['command'] = self.changeWordstate
         self.func_word.grid(row=1,column = 3,sticky = tk.W)
+        self.func_image["text"] = "人脸注册"
+        self.func_image['variable'] = self.funcNum
+        self.func_image['bg'] = 'green'
+        self.func_image['value'] = 3
+        self.func_image['command'] = self.changeImagestate
+        self.func_image.grid(row=2,column = 3,sticky = tk.W)
         self.startvideo = tk.Button(self.frame_speechRec)
         self.startvideo['text'] = "打开摄像头"
         self.startvideo['bg'] = 'green'
         self.startvideo['fg'] = 'white'
         self.startvideo.grid(row = 3,column = 0,sticky = tk.W)
-        self.startvideo['command'] = facecv.faceReg
+        self.startvideo['command'] = facecv.faceRegsearch
+        self.labeluserid = tk.Label(self.frame_speechRec)
+        self.labeluserid["text"] = "USER ID:"
+        self.labeluserid['bg'] = 'green'
+        self.labeluserid['fg'] = 'white'
+        self.labeluserid.grid(row = 3,column = 1,sticky = tk.E)
+        self.userid = tk.Entry(self.frame_speechRec)
+        self.userid['bg'] = 'green'
+        self.userid['fg'] = 'white'
+        self.userid.grid(row = 3,column = 2,sticky = tk.W)
+        self.labeluserinfo = tk.Label(self.frame_speechRec)
+        self.labeluserinfo["text"] = "USER INFO:"
+        self.labeluserinfo['bg'] = 'green'
+        self.labeluserinfo['fg'] = 'white'
+        self.labeluserinfo.grid(row=3, column=3, sticky=tk.E)
+        self.userinfo = tk.Entry(self.frame_speechRec)
+        self.userinfo['bg'] = 'green'
+        self.userinfo['fg'] = 'white'
+        self.userinfo.grid(row = 3,column = 4,sticky = tk.W)
 
 
 
@@ -125,11 +151,15 @@ class Application(tk.Frame):
         self.state = 1
     def changeSpeechstate(self):
         self.state = 0
+    def changeImagestate(self):
+        self.state = 2
     def rec(self):
         if self.state == 0:
             self.speech_rec()
-        else:
+        elif self.state == 1:
             self.word_rec()
+        elif self.state == 2:
+            self.facereg()
 
     def word_rec(self):
         self.result.set("State:" + "正忙")
@@ -192,7 +222,19 @@ class Application(tk.Frame):
         with open("res.txt", 'w') as file:
             file.write(temp1['result'][0])
         #     file.write(temp2['result'][0])
-
+    def facereg(self):
+        self.result.set("State:" + "正忙")
+        client = function.faceinit()
+        data = function.get_file_content(self.filename.get())
+        imagetype = "BASE64"
+        groupId = "group1"
+        userId = self.userid.get()
+        options = {}
+        options["user_info"] = self.userinfo.get()
+        options["quality_control"] = "NORMAL"
+        options["liveness_control"] = "LOW"
+        res = client.addUser(data,imagetype,groupId,userId,options)
+        self.result.set("State:" + res['error_msg'])
 
 
 
