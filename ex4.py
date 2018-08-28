@@ -1,6 +1,6 @@
 import tkinter.filedialog
 import tkinter as tk
-
+import facecv
 from aip import AipSpeech,AipOcr
 
 
@@ -32,7 +32,7 @@ class Application(tk.Frame):
         self.result.set('State:'+'请选择文件...')
         self.funcNum.set(1)
     def create_frame(self):
-        self.frame_speechRec = tk.Frame(width = 550,height = 100, bg = 'green')
+        self.frame_speechRec = tk.Frame(width = 550,height = 200, bg = 'green')
         self.frame_speechRec.grid(row = 0,column = 0)
         self.frame_wordRec = tk.Frame(width = 550,height = 100,bg = 'white')
         self.frame_wordRec.grid(row = 1,column = 0)
@@ -97,6 +97,13 @@ class Application(tk.Frame):
         self.func_word['value'] = 2
         self.func_word['command'] = self.changeWordstate
         self.func_word.grid(row=1,column = 3,sticky = tk.W)
+        self.startvideo = tk.Button(self.frame_speechRec)
+        self.startvideo['text'] = "打开摄像头"
+        self.startvideo['bg'] = 'green'
+        self.startvideo['fg'] = 'white'
+        self.startvideo.grid(row = 3,column = 0,sticky = tk.W)
+        self.startvideo['command'] = facecv.faceReg
+
 
 
 
@@ -104,9 +111,9 @@ class Application(tk.Frame):
         # self.samplerate["command"] = self.getsample
 
 
-        self.quit = tk.Button(self, text="QUIT", fg="red",
+        self.quit = tk.Button(self.frame_speechRec, text="QUIT", bg = 'green',fg="red",
                               command=root.destroy)
-        self.quit.grid(row = 3)
+        self.quit.grid(row = 4,column = 0,sticky = tk.W)
 
     # def say_hi(self):
     #     print("hi there, everyone!")
@@ -185,6 +192,7 @@ class Application(tk.Frame):
         with open("res.txt", 'w') as file:
             file.write(temp1['result'][0])
         #     file.write(temp2['result'][0])
+
 
 
 
