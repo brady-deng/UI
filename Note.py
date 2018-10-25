@@ -17,11 +17,12 @@ class application(tk.Frame):
         self.flagcache = []
         self.finditem = 8012
         self.state = tk.StringVar()
-        self.rowcount = 1
+        self.rowcount = 3
         self.itemcount = 1
         self.labelcount = 0
         self.contentcount = 0
         self.state.set('Wait...')
+        self.collection = tk.StringVar()
     def initwidgetlogin(self):
         self.login = tk.Frame()
         self.labelname = tk.Label(self.login,text = 'User:')
@@ -32,6 +33,8 @@ class application(tk.Frame):
         self.labelpas.grid(row = 1,column = 0,sticky = tk.W)
         self.entrypas = tk.Entry(self.login,show = '*')
         self.entrypas.grid(row = 1, column = 1, sticky = tk.W)
+        self.entryip = tk.Entry(self.login)
+        self.entryip.grid(row = 2,column = 1,sticky = tk.W)
         self.labelstate = tk.Label(self.login,text = 'State:')
         self.labelstate.grid(row = 1,column = 2,sticky = tk.W)
         self.labelstate2 = tk.Label(self.login,textvariable = self.state)
@@ -42,8 +45,7 @@ class application(tk.Frame):
         self.buttonsign.grid(row = 0,column = 3,sticky = tk.W)
         self.labelip = tk.Label(self.login,text = 'IP')
         self.labelip.grid(row = 2,column = 0,sticky = tk.W)
-        self.entryip = tk.Entry(self.login)
-        self.entryip.grid(row = 2,column = 1,sticky = tk.W)
+
         self.login.grid(row = 0,sticky = tk.S)
     def sign(self):
         self.signup = tk.Toplevel()
@@ -90,30 +92,63 @@ class application(tk.Frame):
         self.login.destroy()
         dia.geometry("800x1100")
         self.function = tk.Frame()
-        self.labeldate = tk.Label(self.function,text = 'Date:(example20180914)')
+        self.collention = self.db.list_collection_names()
+        self.collection.set(self.collention)
+        self.labeldate = tk.Label(self.function,text = 'Date:(example20180914)',width = 20)
         self.labeldate.grid(row = 0,column = 0,sticky = tk.W)
         self.entrydate = tk.Entry(self.function,width = 20)
         self.entrydate.grid(row = 0,column = 1,sticky = tk.W)
-        self.buttonlabelin = tk.Button(self.function,text = 'Insert Label',command = self.insertlabel,width = 10)
+        self.labelcol = tk.Label(self.function,text = 'Collections:')
+        self.labelcol.grid(row = 2,column = 0,sticky = tk.W)
+
+
+        self.listscroll = tk.Scrollbar(self.function)
+        self.listscroll.grid(row = 2,column = 2,sticky = tk.W)
+        self.listboxcol = tk.Listbox(self.function,width = 20,height = 2,listvariable = self.collection,yscrollcommand = self.listscroll.set)
+        self.listscroll.config(command  = self.listboxcol.yview)
+        self.listboxcol.grid(row = 2,column = 1,sticky = tk.W)
+
+
+        self.buttonlabelin = tk.Button(self.function,text = 'Insert Label',command = self.insertlabel,width = 12)
         self.buttonlabelin.grid(row = 0,column = 2,sticky = tk.W)
         self.buttoncontentin = tk.Button(self.function,text = 'Insert Content',command = self.insertcontent,width = 12)
         self.buttoncontentin.grid(row = 0, column = 3, sticky = tk.W)
-        self.buttondate = tk.Button(self.function, text='Insert',command = self.insert,width = 6)
-        self.buttondate.grid(row=0, column=4, sticky=tk.W)
-        self.buttonback = tk.Button(self.function, text='Back', command= self.back, width=6)
-        self.buttonback.grid(row=0, column=5, sticky=tk.W)
+        self.buttondate = tk.Button(self.function, text='Insert',command = self.insert,width = 20)
+        self.buttondate.grid(row=1, column=0, sticky=tk.W)
+        self.buttonback = tk.Button(self.function, text='Back', command= self.back, width=20)
+        self.buttonback.grid(row=1, column=1, sticky=tk.W)
         self.labelstatef = tk.Label(self.function,text = 'State:')
-        self.labelstatef.grid(row = 0, column = 6,sticky = tk.W)
+        self.labelstatef.grid(row = 0, column = 4,sticky = tk.W)
         self.labelstatef2 = tk.Label(self.function,textvariable = self.state)
-        self.labelstatef2.grid(row = 0, column = 7,sticky =tk.W)
+        self.labelstatef2.grid(row = 0, column = 5,sticky =tk.W)
         self.function.grid(row=1, sticky=tk.S)
         # self.entryfind = tk.Entry(self.function,width = 10)
         # self.entryfind.grid(row = 1,column = 2,sticky = tk.W)
         self.buttonfind = tk.Button(self.function,text = 'Find by date:',command = self.find,width = 12)
-        self.buttonfind.grid(row = 1, column = 3, sticky = tk.W)
+        self.buttonfind.grid(row = 1, column = 2, sticky = tk.W)
 
-        self.buttonexport = tk.Button(self.function,text = 'Export',command = self.export,width = 6)
-        self.buttonexport.grid(row = 1,column = 4,sticky = tk.W)
+        self.buttonexport = tk.Button(self.function,text = 'Export',command = self.export,width = 12)
+        self.buttonexport.grid(row = 1,column = 3,sticky = tk.W)
+        self.buttonfile = tk.Button(self.function,text = 'New file', command = self.createfile)
+        self.buttonfile.grid(row = 1,column = 4,sticky = tk.W)
+        self.entryfile = tk.Entry(self.function)
+        self.entryfile.grid(row = 1,column = 5,sticky = tk.W)
+    def createfile(self):
+
+        filename = self.entryfile.get()
+        self.file = self.db[filename]
+        self.collention = self.db.list_collection_names()
+        if filename in self.collention:
+            self.state.set('the file already exists')
+        else:
+            self.collention.append(filename)
+            self.collection.set(self.collention)
+            count = len(self.collention)
+            self.listboxcol.selection_anchor(count-1)
+            self.state.set('Success')
+
+        # self.state.set('something went wrong!')
+
     def find(self):
         tempdate = int(self.entrydate.get())
         temp = list(self.collection.find())
@@ -198,11 +233,13 @@ class application(tk.Frame):
 
 
     def insert(self):
+        filename = self.listboxcol.selection_get()
+        self.file = self.db[filename]
         self.predata()
         # self.db = self.client['test']
         # # self.collection = self.db[str(self.data["Date"])]
         # self.collection = self.db['noteex']
-        temp = self.collection.find()
+        temp = self.file.find()
         tempflag = 0
         for item in temp:
             # tempcount = 1
@@ -213,7 +250,7 @@ class application(tk.Frame):
                 break
         if tempflag == 0:
             try:
-                self.collection.insert_one(self.data)
+                self.file.insert_one(self.data)
                 self.state.set("Inserted")
             except:
                 self.state.set('Something went wrong!')
@@ -223,14 +260,14 @@ class application(tk.Frame):
             del(self.data['Date'])
             # del(tempdata['Date'])
             try:
-                self.collection.update_one({"Date":tempdate},{'$addToSet':self.data},True,False)
+                self.file.update_one({"Date":tempdate},{'$addToSet':self.data},True,False)
                 self.state.set('Updated')
             except:
                 self.state.set('Something went wrong!')
 
     def predata(self):
         self.data = {}
-        temp = list(self.collection.find())
+        temp = list(self.file.find())
         self.itemcount = len(temp) + 1
         # tempname = "Content"+str(self.itemcount)
         # self.data.setdefault(tempname,{})
@@ -252,7 +289,7 @@ class application(tk.Frame):
         self.labelcount += 1
         labelname = 'Label'+str(self.rowcount)
         self.labelcache.append(tk.Label(self.function,text = labelname))
-        self.labelcache[self.rowcount - 1].grid(row = self.rowcount,column = 0,sticky = tk.W)
+        self.labelcache[self.rowcount - 3].grid(row = self.rowcount,column = 0,sticky = tk.W)
         self.labelind.append(tk.Entry(self.function))
         self.labelind[self.labelcount-1].grid(row = self.rowcount,column = 1,sticky = tk.W)
         self.rowcount = self.rowcount+1
@@ -266,7 +303,7 @@ class application(tk.Frame):
         self.contentcount+=1
         labelname = 'Content' + str(self.rowcount)
         self.labelcache.append(tk.Label(self.function, text=labelname))
-        self.labelcache[self.rowcount-1].grid(row=self.rowcount, column=0, sticky=tk.W)
+        self.labelcache[self.rowcount-3].grid(row=self.rowcount, column=0, sticky=tk.W)
         self.barind.append(tk.Scrollbar(self.function))
         self.barind[self.contentcount-1].grid(row = self.rowcount,column = 2,sticky = tk.W)
         self.contentind.append(tk.Text(self.function,width = 20,height = 10,yscrollcommand = \
@@ -280,7 +317,7 @@ class application(tk.Frame):
         # self.labelstatef.grid(row=self.rowcount, column=1, sticky=tk.W)
         # self.labelstatef2.grid(row=self.rowcount, column=2, sticky=tk.W)
     def back(self):
-        if self.rowcount>1:
+        if self.rowcount>3:
             if self.flagcache[-1] == 0:
                 self.rowcount-=1
                 self.labelcount-=1
