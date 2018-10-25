@@ -81,6 +81,7 @@ class Application(tk.Frame):
         self.func_speech = tk.Radiobutton(self.frame_speechRec)
         self.func_word = tk.Radiobutton(self.frame_speechRec)
         self.func_image = tk.Radiobutton(self.frame_speechRec)
+        self.func_update = tk.Radiobutton(self.frame_speechRec)
         self.func_speech["text"] = "语音识别"
         self.func_speech["variable"] = self.funcNum
         self.func_speech['bg'] = 'green'
@@ -105,6 +106,12 @@ class Application(tk.Frame):
         self.func_image['value'] = 3
         self.func_image['command'] = self.changeImagestate
         self.func_image.grid(row=2,column = 3,sticky = tk.W)
+        self.func_update["text"] = "人脸注册"
+        self.func_update['variable'] = self.funcNum
+        self.func_update['bg'] = 'green'
+        self.func_update['value'] = 4
+        self.func_update['command'] = self.changeupdatestate
+        self.func_update.grid(row=0, column=4, sticky=tk.W)
         self.startvideo = tk.Button(self.frame_speechRec)
         self.startvideo['text'] = "打开摄像头"
         self.startvideo['bg'] = 'green'
@@ -153,6 +160,8 @@ class Application(tk.Frame):
         self.state = 0
     def changeImagestate(self):
         self.state = 2
+    def changeupdatestate(self):
+        self.state = 3
     def rec(self):
         if self.state == 0:
             self.speech_rec()
@@ -160,6 +169,8 @@ class Application(tk.Frame):
             self.word_rec()
         elif self.state == 2:
             self.facereg()
+        elif self.state == 3:
+            self.faceUpdate()
 
     def word_rec(self):
         self.result.set("State:" + "正忙")
@@ -235,7 +246,17 @@ class Application(tk.Frame):
         options["liveness_control"] = "LOW"
         res = client.addUser(data,imagetype,groupId,userId,options)
         self.result.set("State:" + res['error_msg'])
-
+    def faceUpdate(self):
+        self.result.set("State:" + "正忙")
+        client = function.faceinit()
+        data = function.get_file_content(self.filename.get())
+        imagetype = "BASE64"
+        groupId = "group1"
+        userId = self.userid.get()
+        options = {}
+        options["user_info"] = self.userinfo.get()
+        res = client.updateUser(data,imagetype,groupId,userId,options)
+        self.result.set("State:" + res['error_msg'])
 
 
 root = tk.Tk()
